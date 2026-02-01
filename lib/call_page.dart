@@ -2,9 +2,9 @@
 
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 // Package imports:
-import 'package:zegocloud_app/common.dart';
 import 'package:zegocloud_app/constants.dart';
 
 class CallPage extends StatefulWidget {
@@ -24,21 +24,29 @@ class CallPageState extends State<CallPage> {
 
     return SafeArea(
       child: ZegoUIKitPrebuiltCall(
-        appID: 1866999685 /*input your AppID*/,
-        appSign:
-            "11d88ccd984d430e3e22d657681484fd85aba4e154b10aac8f6e94a9c5d9d22d" /*input your AppSign*/,
+        appID: int.parse(dotenv.env['ZEGO_APP_ID'] ?? '0'),
+        appSign: dotenv.env['ZEGO_APP_SIGN'] ?? '',
         userID: currentUser.id,
         userName: currentUser.name,
         callID: callID,
         config: ZegoUIKitPrebuiltCallConfig.oneOnOneVideoCall()
-          /// support minimizing
-          ..topMenuBar.isVisible = true
-          ..topMenuBar.buttons = [
-            ZegoCallMenuBarButtonName.minimizingButton,
-            ZegoCallMenuBarButtonName.showMemberListButton,
-            ZegoCallMenuBarButtonName.soundEffectButton,
-          ]
-          ..avatarBuilder = customAvatarBuilder,
+          ..turnOnCameraWhenJoining = true
+          ..turnOnMicrophoneWhenJoining = true
+          ..useSpeakerWhenJoining = true
+          ..bottomMenuBar = ZegoCallBottomMenuBarConfig(
+            buttons: [
+              ZegoCallMenuBarButtonName.toggleCameraButton,
+              ZegoCallMenuBarButtonName.toggleMicrophoneButton,
+              ZegoCallMenuBarButtonName.hangUpButton,
+            ],
+          )
+          ..topMenuBar.isVisible = false
+          ..audioVideoView = ZegoCallAudioVideoViewConfig(
+            useVideoViewAspectFill: true,
+            showUserNameOnView: false,
+            showCameraStateOnView: false,
+            showMicrophoneStateOnView: false,
+          ),
       ),
     );
   }
